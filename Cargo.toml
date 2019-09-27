@@ -1,7 +1,12 @@
 [package]
-name = "intbit"
+name = "intbits"
+description = "Easy access to individual bits of integers"
 version = "0.1.0"
 authors = ["Mara Bos <m-ou.se@m-ou.se>"]
+license = "BSD-2-Clause"
 edition = "2018"
+repository = "https://github.com/fusion-engineering/intbits"
+keywords = ["int", "bit", "bits"]
+categories = ["no-std"]
 
 [dependencies]

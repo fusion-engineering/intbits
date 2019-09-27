@@ -1,32 +1,114 @@
 #![no_std]
 
+//! This crates provides two functions for accessing the individual bits of
+//! integers:
+//!
+//! - [`.bit(i)`][Bits::bit] to get one specific bit.
+//! - [`.bits(i..j)`][Bits::bits] to get a range of bits.
+//!
+//! # Example
+//!
+//! ```
+//! use intbits::Bits;
+//!
+//! assert_eq!(2.bit(0), false);
+//! assert_eq!(2.bit(1), true);
+//! assert_eq!(2.bit(2), false);
+//!
+//! assert_eq!(0b1011u32.bits(0..2), 0b11);
+//! assert_eq!(0b1011u32.bits(2..4), 0b10);
+//! ```
+
 use core::ops::{Bound, RangeBounds};
 
-pub trait IntBit {
+/// Extension trait to provide access to individual bits of integers.
+pub trait Bits {
+	/// The (unsigned) type used to represent bits of this type.
+	///
+	/// For unsigned integers, this is `Self`.
+	/// For signed integers, this is the unsigned variant of `Self`.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use intbits::Bits;
+	/// assert_eq!(0 as <u8 as Bits>::Bits, 0u8);
+	/// assert_eq!(0 as <i64 as Bits>::Bits, 0u64);
+	/// assert_eq!(0 as <usize as Bits>::Bits, 0usize);
+	/// assert_eq!(0 as <isize as Bits>::Bits, 0usize);
+	/// ```
 	type Bits;
+
+	/// The number of bits this type has.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use intbits::Bits;
+	/// assert_eq!(u8::N_BITS, 8);
+	/// assert_eq!(i64::N_BITS, 64);
+	/// ```
+	const N_BITS: usize;
+
+	/// Get a single bit.
+	///
+	/// Panics if the index is out of range.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use intbits::Bits;
+	/// assert_eq!(2u8.bit(0), false);
+	/// assert_eq!(2u8.bit(1), true);
+	/// assert_eq!(2u8.bit(2), false);
+	/// ```
 	fn bit<I>(self, i: I) -> bool
 	where
-		I: BitIndex<Self>,
+		I: BitsIndex<Self>,
 		Self: Sized;
+
+	/// Get a range of bits.
+	///
+	/// The bits are returned in the least significant bits of the return
+	/// value. The other bits, if any, will be 0.
+	///
+	/// Empty ranges are allowed, and will result in 0.
+	///
+	/// Panics when the range bounds are out of range.
+	///
+	/// # Example
+	///
+	/// ```
+	/// # use intbits::Bits;
+	/// assert_eq!(0x45u8.bits(0..4), 5);
+	/// assert_eq!(0x45u8.bits(4..8), 4);
+	/// assert_eq!(0xF1u8.bits(1..), 0x78);
+	/// assert_eq!(0xF1u8.bits(..7), 0x71);
+	/// assert_eq!(0xF1u8.bits(8..), 0);
+	/// assert_eq!(0xF1u8.bits(..0), 0);
+	/// ```
 	fn bits<I, R>(self, range: R) -> Self::Bits
 	where
-		I: BitIndex<Self>,
+		I: BitsIndex<Self>,
 		R: RangeBounds<I>,
 		Self: Sized;
 }
 
-pub trait BitIndex<T> {
+/// Trait for types that can be used to index the bits of `T`.
+pub trait BitsIndex<T> {
+	/// See [`Bits::bit`].
 	fn bit(value: T, index: Self) -> bool;
-	fn bits<R>(value: T, range: R) -> <T as IntBit>::Bits
+	/// See [`Bits::bits`].
+	fn bits<R>(value: T, range: R) -> <T as Bits>::Bits
 	where
-		T: IntBit,
+		T: Bits,
 		R: RangeBounds<Self>;
 }
 
-macro_rules! int_bit {
+macro_rules! bits {
 	($t:tt, $ut:tt, $n:tt, $i:tt) => {
 		#[allow(unused_comparisons)]
-		impl BitIndex<$t> for $i {
+		impl BitsIndex<$t> for $i {
 			#[inline]
 			fn bit(v: $t, i: Self) -> bool {
 				assert!(i >= 0 && i <= $n, "Invalid bit index.");
@@ -61,59 +143,60 @@ macro_rules! int_bit {
 		}
 	};
 	($t:tt, $ut:tt, $n:tt) => {
-		impl IntBit for $t {
+		impl Bits for $t {
 			type Bits = $ut;
+			const N_BITS: usize = $n + 1;
 			fn bit<I>(self, i: I) -> bool
 			where
-				I: BitIndex<Self>,
+				I: BitsIndex<Self>,
 			{
 				I::bit(self, i)
 			}
 			fn bits<I, R>(self, range: R) -> $ut
 			where
-				I: BitIndex<Self>,
+				I: BitsIndex<Self>,
 				R: RangeBounds<I>,
 			{
 				I::bits(self, range)
 			}
 		}
-		int_bit!($t, $ut, $n, i8);
-		int_bit!($t, $ut, $n, u8);
-		int_bit!($t, $ut, $n, i16);
-		int_bit!($t, $ut, $n, u16);
-		int_bit!($t, $ut, $n, i32);
-		int_bit!($t, $ut, $n, u32);
-		int_bit!($t, $ut, $n, i64);
-		int_bit!($t, $ut, $n, u64);
-		int_bit!($t, $ut, $n, i128);
-		int_bit!($t, $ut, $n, u128);
-		int_bit!($t, $ut, $n, isize);
-		int_bit!($t, $ut, $n, usize);
+		bits!($t, $ut, $n, i8);
+		bits!($t, $ut, $n, u8);
+		bits!($t, $ut, $n, i16);
+		bits!($t, $ut, $n, u16);
+		bits!($t, $ut, $n, i32);
+		bits!($t, $ut, $n, u32);
+		bits!($t, $ut, $n, i64);
+		bits!($t, $ut, $n, u64);
+		bits!($t, $ut, $n, i128);
+		bits!($t, $ut, $n, u128);
+		bits!($t, $ut, $n, isize);
+		bits!($t, $ut, $n, usize);
 	};
 }
 
-int_bit!(i8, u8, 7);
-int_bit!(u8, u8, 7);
-int_bit!(i16, u16, 15);
-int_bit!(u16, u16, 15);
-int_bit!(i32, u32, 31);
-int_bit!(u32, u32, 31);
-int_bit!(i64, u64, 63);
-int_bit!(u64, u64, 63);
-int_bit!(i128, u128, 127);
-int_bit!(u128, u128, 127);
+bits!(i8, u8, 7);
+bits!(u8, u8, 7);
+bits!(i16, u16, 15);
+bits!(u16, u16, 15);
+bits!(i32, u32, 31);
+bits!(u32, u32, 31);
+bits!(i64, u64, 63);
+bits!(u64, u64, 63);
+bits!(i128, u128, 127);
+bits!(u128, u128, 127);
 
 #[cfg(target_pointer_width = "32")]
-int_bit!(isize, usize, 31);
+bits!(isize, usize, 31);
 
 #[cfg(target_pointer_width = "32")]
-int_bit!(usize, usize, 31);
+bits!(usize, usize, 31);
 
 #[cfg(target_pointer_width = "64")]
-int_bit!(isize, usize, 63);
+bits!(isize, usize, 63);
 
 #[cfg(target_pointer_width = "64")]
-int_bit!(usize, usize, 63);
+bits!(usize, usize, 63);
 
 #[test]
 fn test() {
