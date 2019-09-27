@@ -63,7 +63,7 @@ pub trait Bits {
 	/// ```
 	const N_BITS: usize;
 
-	/// Get a single bit.
+	/// Get a specific bit.
 	///
 	/// Panics if the index is out of range.
 	///
