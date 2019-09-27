@@ -205,7 +205,7 @@ macro_rules! bits {
 		impl BitsIndex<$t> for $i {
 			#[inline]
 			fn bit(v: $t, i: Self) -> bool {
-				assert!(i >= 0 && i <= $n, "Invalid bit index.");
+				assert!(i >= 0 && i <= $n, "invalid bit index");
 				v >> i & 1 != 0
 			}
 
