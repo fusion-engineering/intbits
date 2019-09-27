@@ -375,6 +375,15 @@ fn test_get() {
 	assert_eq!(1234u32.bits(0..=31), 1234);
 	assert_eq!((-1i32).bits(0..32), !0);
 	assert_eq!((-1i32).bits(1..32), !0 >> 1);
+	assert_eq!(
+		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(0..128),
+		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+	);
+	assert_eq!(
+		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(64..),
+		0xAAAAAAAAAAAAAAAA
+	);
+	assert_eq!(0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(127..), 1);
 }
 
 #[test]
