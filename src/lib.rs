@@ -283,12 +283,14 @@ macro_rules! bits {
 		impl Bits for $t {
 			type Bits = $ut;
 			const N_BITS: usize = $n + 1;
+			#[inline]
 			fn bit<I>(self, i: I) -> bool
 			where
 				I: BitsIndex<Self>,
 			{
 				I::bit(self, i)
 			}
+			#[inline]
 			fn bits<I, R>(self, range: R) -> $ut
 			where
 				I: BitsIndex<Self>,
@@ -296,12 +298,14 @@ macro_rules! bits {
 			{
 				I::bits(self, range)
 			}
+			#[inline]
 			fn set_bit<I>(&mut self, i: I, bit: bool)
 			where
 				I: BitsIndex<Self>,
 			{
 				I::set_bit(self, i, bit)
 			}
+			#[inline]
 			fn set_bits<I, R>(&mut self, range: R, bits: $ut)
 			where
 				I: BitsIndex<Self>,
@@ -309,6 +313,7 @@ macro_rules! bits {
 			{
 				I::set_bits(self, range, bits)
 			}
+			#[inline]
 			fn with_bit<I>(mut self, i: I, bit: bool) -> Self
 			where
 				I: BitsIndex<Self>,
@@ -316,6 +321,7 @@ macro_rules! bits {
 				I::set_bit(&mut self, i, bit);
 				self
 			}
+			#[inline]
 			fn with_bits<I, R>(mut self, range: R, bits: $ut) -> Self
 			where
 				I: BitsIndex<Self>,
