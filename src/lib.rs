@@ -369,42 +369,5 @@ bits!(isize, usize, 63);
 #[cfg(target_pointer_width = "64")]
 bits!(usize, usize, 63);
 
-#[test]
-fn test_get() {
-	assert_eq!(123u32.bits(0..0), 0);
-	assert_eq!(255u32.bits(0..8), 255);
-	assert_eq!(255u32.bits(0..9), 255);
-	assert_eq!(255u32.bits(0..7), 127);
-	assert_eq!(1234u32.bits(0..32), 1234);
-	assert_eq!(123u32.bits(0..=0), 1);
-	assert_eq!(123u32.bits(0..=-1), 0);
-	assert_eq!(1234u32.bits(0..=31), 1234);
-	assert_eq!((-1i32).bits(0..32), !0);
-	assert_eq!((-1i32).bits(1..32), !0 >> 1);
-	assert_eq!(
-		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(0..128),
-		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	);
-	assert_eq!(
-		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(64..),
-		0xAAAAAAAAAAAAAAAA
-	);
-	assert_eq!(0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.bits(127..), 1);
-}
-
-#[test]
-fn test_set() {
-	assert_eq!(0xFFu8.with_bits(4..8, 2), 0x2F);
-	assert_eq!(0xFFu8.with_bits(0..4, 2), 0xF2);
-	assert_eq!(0u32.with_bits(5..9, 0xF), 0b111100000);
-	assert_eq!(
-		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128
-			.with_bit(127, false)
-			.with_bit(126, true),
-		0x6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	);
-	assert_eq!(
-		0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu128.with_bits(126..128, 1),
-		0x6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	);
-}
+#[cfg(test)]
+mod test;
