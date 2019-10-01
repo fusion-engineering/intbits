@@ -1,6 +1,6 @@
 use super::{Bits, BitsIndex};
-use core::ops::{Bound, RangeBounds};
 use core::ops::Bound::{Excluded, Included, Unbounded};
+use core::ops::{Bound, RangeBounds};
 
 trait BitRange<T>: Bits {
 	fn mask(end: Bound<&T>) -> Self::Bits;

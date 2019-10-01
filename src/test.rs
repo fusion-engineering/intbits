@@ -106,7 +106,10 @@ fn test_get_panic_7() {
 #[test]
 #[should_panic(expected = "invalid bit range")]
 fn test_get_panic_8() {
-	123u32.bits((Bound::Included(-0x10000000000000000000000000000000i128), Bound::Unbounded));
+	123u32.bits((
+		Bound::Included(-0x10000000000000000000000000000000i128),
+		Bound::Unbounded,
+	));
 }
 
 #[test]
