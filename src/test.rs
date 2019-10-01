@@ -3,6 +3,9 @@ use core::ops::Bound;
 
 #[test]
 fn test_get() {
+	assert_eq!(2u32.bit(0), false);
+	assert_eq!(2u32.bit(1), true);
+	assert_eq!(2u32.bit(2), false);
 	assert_eq!(123u32.bits(0..0), 0);
 	assert_eq!(255u32.bits(0..8), 255);
 	assert_eq!(255u32.bits(0..9), 255);
@@ -110,6 +113,18 @@ fn test_get_panic_8() {
 #[should_panic(expected = "invalid bit range")]
 fn test_get_panic_9() {
 	123u128.bits(-128i8..);
+}
+
+#[test]
+#[should_panic(expected = "invalid bit range")]
+fn test_get_panic_10() {
+	123u32.bits(..33);
+}
+
+#[test]
+#[should_panic(expected = "invalid bit range")]
+fn test_get_panic_11() {
+	123u32.bits(..-1);
 }
 
 #[test]
