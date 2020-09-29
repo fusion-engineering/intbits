@@ -61,7 +61,7 @@ pub trait Bits {
 	/// assert_eq!(u8::N_BITS, 8);
 	/// assert_eq!(i64::N_BITS, 64);
 	/// ```
-	const N_BITS: usize;
+	const N_BITS: u32;
 
 	/// Get a specific bit.
 	///

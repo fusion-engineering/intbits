@@ -83,7 +83,7 @@ macro_rules! bits {
 	($t:tt, $ut:tt, $n:tt) => {
 		impl Bits for $t {
 			type Bits = $ut;
-			const N_BITS: usize = $n + 1;
+			const N_BITS: u32 = $n + 1;
 			#[inline]
 			fn bit<I>(self, i: I) -> bool
 			where
