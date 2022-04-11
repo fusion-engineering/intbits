@@ -4,7 +4,7 @@ use core::ops::{Bound, RangeBounds};
 
 trait BitRange<T>: Bits {
 	fn mask(end: Bound<&T>) -> Self::Bits;
-	fn shift(end: Bound<&T>) -> Option<T>;
+	fn shift(start: Bound<&T>) -> Option<T>;
 }
 
 macro_rules! bits {
