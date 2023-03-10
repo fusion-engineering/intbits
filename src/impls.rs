@@ -158,6 +158,12 @@ bits!(u64, u64, 63);
 bits!(i128, u128, 127);
 bits!(u128, u128, 127);
 
+#[cfg(target_pointer_width = "16")]
+bits!(isize, usize, 15);
+
+#[cfg(target_pointer_width = "16")]
+bits!(usize, usize, 15);
+
 #[cfg(target_pointer_width = "32")]
 bits!(isize, usize, 31);
 
